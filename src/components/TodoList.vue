@@ -6,10 +6,11 @@
             v-model="newTodo"
             @keyup.enter="addTodo"
             />
-        Todo list goes here
+        <b>Your Todo List</b>
         <div v-for="(todo,index) in todos" :key="todo.id" class="todo-item">
-            <div>
-                {{ todo.title }}
+            <div class="todo-item-left">
+                <div @dblclick="editTodo(todo)" v-if="!todo.editing" class="todo-item-label">{{ todo.title }} </div>
+                <input v-focus @keyup.enter="doneEdit(todo)" @blur="doneEdit(todo)" v-else class="todo-item-edit" type='text' v-model="todo.title" />   
             </div>
             <div class='remove-item' @click="removeTodo(index)">
                 &times;
@@ -30,14 +31,23 @@ export default {
                 {
                     "id": 1,
                     "title":"Finish Vue Screencast",
-                    "completed": false
+                    "completed": false,
+                    "editing": false
                 },
                 {
                     "id": 2,
                     "title":"Take over world",
-                    "completed": true
+                    "completed": true,
+                    "editing": false
                 }
             ]
+        }
+    },
+    directives:{
+        focus:{
+            inserted: function(el){
+                el.focus()
+            }
         }
     },
     methods:{
@@ -53,6 +63,12 @@ export default {
             this.newTodo = ''
             this.idForTodo++
             
+        },
+        editTodo(todo){
+            todo.editing = true;
+        },
+        doneEdit(todo){
+            todo.editing = false;
         },
         removeTodo(index){
             this.todos.splice(index,1)
@@ -84,6 +100,18 @@ export default {
         margin-left: 14px;
         &:hover {
             color:red;
+        }
+    }
+
+    .todo-item-edit {
+        display:block;
+        width:100%;
+        color:#2c3e50;
+        padding:10px;
+        border: 1px solid #ccc;
+        font-size: 24px;
+        &:focus{
+            outline: none;
         }
     }
 
